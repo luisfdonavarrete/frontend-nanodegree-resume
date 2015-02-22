@@ -217,6 +217,8 @@ span {
     }
 }
 
+/* graph style */
+
 .line {
     stroke-width: 1.5px;
 }
@@ -239,10 +241,8 @@ span {
 
 .tooltip {    
     position: relative;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
     font-weight: 400;
-    /*line-height: 1.4;*/
     visibility: visible;
     filter: alpha(opacity=0);
     opacity: 0;
@@ -264,16 +264,18 @@ span {
 .tooltip-arrow {
     width: 0;
     height: 0;
-    border-color: transparent;
-    border-style: solid;
+    border: solid transparent;
 }
 
 .tooltip-inner {
     max-width: 200px;
     padding: 3px 8px;
-    
     text-align: left;
     text-decoration: none;
     border: solid 1px #000;
     border-radius: 4px;
+}
+
+.tooltip-text{
+    font-size: 12px;
 }

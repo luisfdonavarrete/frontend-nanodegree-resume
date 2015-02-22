@@ -62,6 +62,8 @@ var HTMLgraphWorkTitle = '<h3>Work Experience Timeline</h3>';
 var HTMLgraphSVG = '<div class="graph-work"></div>';
 
 var HTMLtoolTip = '<div class="tooltip top"><div class="tooltip-inner"></div><div class="tooltip-arrow"></div></div>';
+
+var HTMLtoolTipText = "<p class='tooltip-text'></p>"
 /*
 The International Name challenge in Lesson 2 where you'll create a function that will need this helper code to run. Don't delete! It hooks up your code to the button you'll be appending.
 */

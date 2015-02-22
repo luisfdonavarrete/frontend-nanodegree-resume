@@ -187,10 +187,151 @@ var projects = {
     }
 };
 
+function iniziatileGraph() {
+        $("#workExperience").append(HTMLgraphWorkTitle);
+        $("#workExperience").append(HTMLgraphSVG);
+        var WIDHT = 960;
+        var HEIGHT = 200;
+        var PADDING = 20;
+        var BAR_HEIGHT = 2;
+        var TWO_TIMES_PADDING = PADDING * 2;
+
+        var colorPalette = d3.scale.category20();
+        var colorScale = d3.scale.ordinal()
+            .range(colorPalette.range());
+        
+        function stringToDate(stringDate){
+            return new Date(stringDate.trim().replace(" ", ", "));
+        }
+
+        function buildPoints(starDate, endDate) {
+            return [
+                {x: starDate, y: BAR_HEIGHT},
+                {x: endDate, y: BAR_HEIGHT},
+                {x: endDate, y: 0},
+                {x: starDate, y: 0},
+                {x: starDate, y: BAR_HEIGHT}
+            ];
+        }
+
+        var dataSet = buildDataSet(work.jobs);
+
+        var xDomain = d3.extent(d3.merge(dataSet), function (d) {
+            return d.x
+        });
+
+        var yDomain = d3.extent(d3.merge(dataSet), function (d) {
+            return d.y
+        });
+
+        var xScale = d3.time.scale()
+            .range([PADDING, WIDHT - TWO_TIMES_PADDING])
+            .domain(d3.extent(xDomain));
+
+        var yScale = d3.scale.linear()
+            .range([HEIGHT - PADDING, PADDING])
+            .domain([0, 10]);
+
+        var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(yScale)
+            .ticks(5)
+            .orient("left");
+
+        function buildDataSet(jobs) {
+            var data = [];
+            jobs.forEach(function (job) {
+                var date = job.dates.split("-");
+                date = date.map(stringToDate);
+                data.push(buildPoints(date[0], date[1]));
+            });
+            return data;
+        }
+
+        var svg = d3.select(".graph-work")
+            .append("svg")
+            .attr("width", WIDHT)
+            .attr("height", HEIGHT);
+    
+        var foreingObject = svg
+            .append("foreignObject")
+            .attr("class", "foreign-object")
+            .attr("width", 200)
+            .attr("height", 50); 
+    
+        foreingObject.append("xhtml:body")
+            .style("margin", 0)
+            .style("padding", 0);
+
+        $(".foreign-object body").append(HTMLtoolTip);
+        
+        var toolTip= d3.select(".tooltip");
+
+        var pathContainers = svg.selectAll('g.line')
+            .data(dataSet);
+
+        pathContainers.enter().append('g')
+            .attr("style", function (d, i) {
+                return "fill: " + colorScale(i);
+            });
+
+        pathContainers.selectAll('path')
+            .data(function (d) {
+                return [d];
+            })
+            .enter().append('path')
+                .attr("class", "job")
+                .attr("d", d3.svg.line()
+                    .x(function (d) {
+                        return xScale(d.x);
+                    })
+                    .y(function (d) {
+                        return yScale(d.y);
+                    })
+                    .interpolate("lineal")
+                );
+
+        svg.selectAll(".job")
+            .data(work.jobs)
+            .on("mouseover", function (d) {
+                mouseover(d);
+            })
+            .on("mouseout", mouseout);
+    
+        function mouseout(d){
+            toolTip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+        }
+        
+        function mouseover(d) {
+             foreingObject
+                 .attr("x", function () {
+                     return xScale(stringToDate(d.dates.split("-")[0]));
+                 })
+                 .attr("y", yScale(BAR_HEIGHT * 4));
+            var toolTipText = d.employer + "<br>" + d.location + "<br>" + d.dates;
+            $(".tooltip-inner").html(HTMLtoolTipText);
+            $(".tooltip-text").html(toolTipText);
+            
+             toolTip.transition()
+                 .duration(500)
+                 .style("opacity", 1);
+         }
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (HEIGHT - PADDING) + ")")
+            .call(xAxis);
+    }
+
 (function () {
     bio.display();
     work.display();
     projects.display();
     education.display();
     initializeMap();
+    iniziatileGraph();
 })();
